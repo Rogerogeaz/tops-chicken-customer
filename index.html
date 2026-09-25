@@ -1,1 +1,1334 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#075c35">
+<link rel="manifest" href="manifest.json">
+<title>Tops Chicken Farm - Order Chicks</title>
+
+<style>
+:root{
+  --green:#075c35;
+  --green-dark:#034126;
+  --green-light:#0b7a46;
+  --gold:#f5c52f;
+  --gold-dark:#dca900;
+  --cream:#fffdf3;
+  --white:#ffffff;
+  --text:#173326;
+  --muted:#68776f;
+  --border:#dfe8df;
+  --red:#d92727;
+  --shadow:0 10px 30px rgba(3,65,38,.10);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f8f2;
+  color:var(--text);
+}
+
+button,input,select{
+  font:inherit;
+}
+
+.app{
+  width:100%;
+  max-width:620px;
+  margin:0 auto;
+  min-height:100vh;
+  background:var(--cream);
+  box-shadow:0 0 35px rgba(0,0,0,.08);
+}
+
+/* HEADER */
+.header{
+  background:linear-gradient(145deg,var(--green-dark),var(--green));
+  color:white;
+  padding:18px 18px 22px;
+  position:relative;
+  overflow:hidden;
+}
+
+.header:after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  border:28px solid rgba(245,197,47,.10);
+  border-radius:50%;
+  right:-90px;
+  top:-90px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  position:relative;
+  z-index:1;
+}
+
+.logo{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:white;
+  border:4px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  flex-shrink:0;
+}
+
+.brand h1{
+  margin:0;
+  font-size:22px;
+  letter-spacing:.5px;
+}
+
+.brand p{
+  margin:4px 0 0;
+  color:#ffe88b;
+  font-size:12px;
+  font-weight:700;
+}
+
+.hero{
+  margin-top:20px;
+  position:relative;
+  z-index:1;
+}
+
+.hero h2{
+  margin:0;
+  font-size:29px;
+  line-height:1.08;
+}
+
+.hero p{
+  margin:9px 0 0;
+  color:#e8f4ec;
+  line-height:1.45;
+  font-size:14px;
+}
+
+/* STEPS */
+.steps{
+  display:flex;
+  gap:5px;
+  padding:12px;
+  background:white;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+.step{
+  flex:1;
+  text-align:center;
+  font-size:10px;
+  color:#8a978f;
+  font-weight:700;
+}
+
+.step .circle{
+  width:25px;
+  height:25px;
+  margin:0 auto 4px;
+  border-radius:50%;
+  border:2px solid #cdd8d0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+}
+
+.step.active{
+  color:var(--green);
+}
+
+.step.active .circle{
+  background:var(--green);
+  border-color:var(--green);
+  color:white;
+}
+
+.step.done .circle{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:var(--green-dark);
+}
+
+/* CONTENT */
+.content{
+  padding:18px;
+}
+
+.screen{display:none}
+.screen.active{display:block}
+
+.section-title{
+  margin:0 0 5px;
+  font-size:23px;
+  color:var(--green-dark);
+}
+
+.section-subtitle{
+  margin:0 0 18px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+
+/* BREEDS */
+.breed-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.breed-card{
+  border:2px solid var(--border);
+  border-radius:16px;
+  background:white;
+  padding:12px 6px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.breed-card.selected{
+  border-color:var(--gold);
+  background:#fff9d9;
+  box-shadow:0 5px 15px rgba(245,197,47,.18);
+}
+
+.breed-icon{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  margin:0 auto 8px;
+  background:#edf5ed;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:31px;
+}
+
+.breed-card strong{
+  display:block;
+  color:var(--green-dark);
+  font-size:14px;
+}
+
+/* AGE */
+.age-list{
+  display:grid;
+  gap:9px;
+  margin-top:18px;
+}
+
+.age-option{
+  border:2px solid var(--border);
+  border-radius:13px;
+  padding:13px 14px;
+  background:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+
+.age-option.selected{
+  border-color:var(--green);
+  background:#eff9f2;
+}
+
+.age-name{
+  font-weight:700;
+}
+
+.age-price{
+  font-weight:800;
+  color:var(--green);
+}
+
+/* QUANTITY */
+.quantity-box{
+  margin-top:20px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+}
+
+.quantity-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.quantity-controls{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.qty-btn{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:50%;
+  background:var(--green);
+  color:white;
+  font-size:25px;
+  cursor:pointer;
+}
+
+.qty-number{
+  min-width:42px;
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+}
+
+.total-box{
+  margin-top:15px;
+  padding:15px;
+  border-radius:14px;
+  background:var(--green);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.total-box span:last-child{
+  color:#ffe37b;
+  font-size:22px;
+  font-weight:900;
+}
+
+/* FORM */
+.form-group{
+  margin-bottom:14px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.form-group input,
+.form-group textarea{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #ccd8cf;
+  border-radius:11px;
+  outline:none;
+  background:white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(7,92,53,.08);
+}
+
+.form-group textarea{
+  min-height:85px;
+  resize:vertical;
+}
+
+.choice-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.choice{
+  border:2px solid var(--border);
+  border-radius:13px;
+  padding:15px;
+  background:white;
+  cursor:pointer;
+}
+
+.choice.selected{
+  border-color:var(--green);
+  background:#eff9f2;
+}
+
+.choice strong{
+  display:block;
+  margin-bottom:4px;
+}
+
+.choice small{
+  color:var(--muted);
+}
+
+/* REVIEW */
+.review-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.review-head{
+  background:var(--green);
+  color:white;
+  padding:14px 16px;
+  font-weight:800;
+}
+
+.review-body{
+  padding:15px;
+}
+
+.review-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:10px 0;
+  border-bottom:1px solid #edf1ed;
+  font-size:14px;
+}
+
+.review-row:last-child{border-bottom:0}
+
+.review-row span:first-child{
+  color:var(--muted);
+}
+
+.review-total{
+  margin-top:12px;
+  padding-top:14px;
+  border-top:2px solid var(--gold);
+  display:flex;
+  justify-content:space-between;
+  font-size:19px;
+  font-weight:900;
+  color:var(--green-dark);
+}
+
+/* BUTTONS */
+.buttons{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+}
+
+.btn{
+  flex:1;
+  min-height:50px;
+  border:0;
+  border-radius:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn-primary{
+  background:var(--green);
+  color:white;
+}
+
+.btn-primary:hover{background:var(--green-light)}
+
+.btn-secondary{
+  background:#edf2ed;
+  color:var(--green-dark);
+}
+
+.btn-gold{
+  background:var(--gold);
+  color:var(--green-dark);
+}
+
+.error{
+  color:var(--red);
+  font-size:12px;
+  margin-top:5px;
+  display:none;
+}
+
+/* SUCCESS */
+.success{
+  text-align:center;
+  padding:25px 5px 35px;
+}
+
+.success-icon{
+  width:82px;
+  height:82px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  background:#e6f6e9;
+  color:var(--green);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:44px;
+  border:4px solid #b9dfc2;
+}
+
+.order-number{
+  background:var(--green);
+  color:white;
+  border-radius:13px;
+  padding:14px;
+  margin:18px 0;
+  font-size:18px;
+  font-weight:900;
+}
+
+.note{
+  padding:13px;
+  background:#fff8d8;
+  border-left:4px solid var(--gold);
+  border-radius:8px;
+  color:#665516;
+  font-size:12px;
+  line-height:1.5;
+}
+
+/* FOOTER */
+.footer{
+  background:var(--green-dark);
+  color:white;
+  padding:20px 18px;
+  text-align:center;
+  font-size:12px;
+}
+
+.footer strong{
+  color:var(--gold);
+  font-size:15px;
+}
+
+.whatsapp{
+  display:inline-block;
+  margin-top:9px;
+  color:white;
+  text-decoration:none;
+  font-weight:700;
+}
+
+/* MOBILE */
+
+/* =========================================================
+   ORDER STATUS TRACKING
+   ========================================================= */
+
+.track-box{
+  margin-top:20px;
+  padding:16px;
+  border:1px solid #dfe7df;
+  border-radius:14px;
+  background:#f8faf8;
+  text-align:left;
+}
+.track-title{font-size:16px;font-weight:900;color:var(--green-dark);margin-bottom:5px}
+.track-subtitle{font-size:12px;color:var(--muted);line-height:1.45;margin-bottom:13px}
+.track-fields{display:grid;gap:10px}
+.track-fields input{width:100%;box-sizing:border-box}
+.track-result{margin-top:13px;padding:13px;border-radius:11px;background:white;border:1px solid #e0e7e0;display:none;line-height:1.65}
+.track-status{display:inline-block;margin-top:7px;padding:8px 12px;border-radius:999px;background:#fff3cf;color:#6b5300;font-weight:900;font-size:13px}
+.track-status.processing{background:#e8f0ff;color:#174b9a}
+.track-status.ready{background:#e7f7ea;color:#17652b}
+.track-status.completed{background:#dff4e4;color:#0c5b22}
+.track-status.cancelled{background:#fde8e8;color:#a21d1d}
+.track-error{color:#b42318;font-size:12px;line-height:1.4;margin-top:9px}
+
+@media(max-width:420px){
+  .content{padding:15px}
+  .hero h2{font-size:25px}
+  .breed-grid{gap:7px}
+  .breed-card{padding:10px 4px}
+  .breed-icon{width:50px;height:50px;font-size:27px}
+  .step{font-size:9px}
+}
+
+@media(min-width:621px){
+  body{padding:20px 0}
+  .app{border-radius:20px;overflow:hidden}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo">🐔</div>
+      <div>
+        <h1>TOPS CHICKEN FARM</h1>
+        <p>Healthy Chicks • Strong Farms • Better Tomorrow</p>
+      </div>
+    </div>
+
+    <div class="hero">
+      <h2>Quality, Healthy &amp; Vigorous Chicks</h2>
+      <p>Choose your breed, age and quantity, then place your order with Tops Chicken Farm.</p>
+    </div>
+  </header>
+
+  <div class="steps">
+    <div class="step active" id="step1Indicator">
+      <div class="circle">1</div>Chicks
+    </div>
+    <div class="step" id="step2Indicator">
+      <div class="circle">2</div>Details
+    </div>
+    <div class="step" id="step3Indicator">
+      <div class="circle">3</div>Delivery
+    </div>
+    <div class="step" id="step4Indicator">
+      <div class="circle">4</div>Review
+    </div>
+  </div>
+
+  <main class="content">
+
+    <!-- SCREEN 1 -->
+    <section class="screen active" id="screen1">
+      <h2 class="section-title">Choose Your Chicks</h2>
+      <p class="section-subtitle">Select the breed, age and number of chicks you want.</p>
+
+      <h3 style="font-size:15px;margin:0 0 10px;color:var(--green-dark);">Breed</h3>
+
+      <div class="breed-grid">
+        <div class="breed-card selected" data-breed="Sasso" onclick="selectBreed(this)">
+          <div class="breed-icon">🐥</div>
+          <strong>Sasso</strong>
+        </div>
+
+        <div class="breed-card" data-breed="Kuroilers" onclick="selectBreed(this)">
+          <div class="breed-icon">🐤</div>
+          <strong>Kuroilers</strong>
+        </div>
+
+        <div class="breed-card" data-breed="Karlo" onclick="selectBreed(this)">
+          <div class="breed-icon">🐣</div>
+          <strong>Karlo</strong>
+        </div>
+      </div>
+
+      <h3 style="font-size:15px;margin:22px 0 10px;color:var(--green-dark);">Chick Age</h3>
+
+      <div class="age-list" id="ageList">
+        <div style="padding:16px;text-align:center;color:var(--muted);background:white;border:1px solid var(--border);border-radius:13px;">Loading live prices...</div>
+      </div>
+
+      <div class="quantity-box">
+        <div class="quantity-row">
+          <strong>Quantity</strong>
+
+          <div class="quantity-controls">
+            <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
+            <div class="qty-number" id="quantityDisplay">1</div>
+            <button class="qty-btn" onclick="changeQuantity(1)">+</button>
+          </div>
+        </div>
+
+        <div class="total-box">
+          <span>Order Total</span>
+          <span id="totalDisplay">KSh 100</span>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-primary" onclick="goToScreen(2)">Continue</button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 2 -->
+    <section class="screen" id="screen2">
+      <h2 class="section-title">Customer Details</h2>
+      <p class="section-subtitle">Tell us who is placing the order.</p>
+
+      <div class="form-group">
+        <label for="customerName">Full Name</label>
+        <input id="customerName" type="text" placeholder="Enter your full name">
+        <div class="error" id="nameError">Please enter your name.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="customerPhone">Phone / WhatsApp</label>
+        <input id="customerPhone" type="tel" placeholder="e.g. 0727 448 884">
+        <div class="error" id="phoneError">Please enter your phone number.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="customerLocation">Location</label>
+        <input id="customerLocation" type="text" placeholder="Town / area / estate">
+        <div class="error" id="locationError">Please enter your location.</div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="goToScreen(1)">Back</button>
+        <button class="btn btn-primary" onclick="validateDetails()">Continue</button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 3 -->
+    <section class="screen" id="screen3">
+      <h2 class="section-title">Delivery or Collection</h2>
+      <p class="section-subtitle">Choose how you would like to receive your chicks.</p>
+
+      <div class="choice-grid">
+        <div class="choice selected" data-method="Delivery" onclick="selectMethod(this)">
+          <strong>🚚 Delivery</strong>
+          <small>Arrange delivery to your location.</small>
+        </div>
+
+        <div class="choice" data-method="Collection" onclick="selectMethod(this)">
+          <strong>📦 Collection</strong>
+          <small>Collect your order from the farm.</small>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:18px;">
+        <label for="deliveryNotes">Additional Instructions (Optional)</label>
+        <textarea id="deliveryNotes" placeholder="Landmark, preferred delivery time, or other instructions"></textarea>
+      </div>
+
+      <div class="note">
+        Payment method for this first version: <strong>Cash on Delivery / Collection.</strong>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="goToScreen(2)">Back</button>
+        <button class="btn btn-primary" onclick="goToScreen(4)">Review Order</button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 4 -->
+    <section class="screen" id="screen4">
+      <h2 class="section-title">Review Your Order</h2>
+      <p class="section-subtitle">Check everything before placing your order.</p>
+
+      <div class="review-card">
+        <div class="review-head">🐔 Chick Order</div>
+
+        <div class="review-body">
+          <div class="review-row">
+            <span>Breed</span>
+            <strong id="reviewBreed">Sasso</strong>
+          </div>
+
+          <div class="review-row">
+            <span>Age</span>
+            <strong id="reviewAge">Day Old</strong>
+          </div>
+
+          <div class="review-row">
+            <span>Price per chick</span>
+            <strong id="reviewPrice">KSh 100</strong>
+          </div>
+
+          <div class="review-row">
+            <span>Quantity</span>
+            <strong id="reviewQuantity">1</strong>
+          </div>
+
+          <div class="review-row">
+            <span>Customer</span>
+            <strong id="reviewName"></strong>
+          </div>
+
+          <div class="review-row">
+            <span>Phone</span>
+            <strong id="reviewPhone"></strong>
+          </div>
+
+          <div class="review-row">
+            <span>Location</span>
+            <strong id="reviewLocation"></strong>
+          </div>
+
+          <div class="review-row">
+            <span>Method</span>
+            <strong id="reviewMethod">Delivery</strong>
+          </div>
+
+          <div class="review-total">
+            <span>Total</span>
+            <span id="reviewTotal">KSh 100</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:15px;">
+        <strong>Payment:</strong> Cash on Delivery / Collection.
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="goToScreen(3)">Back</button>
+        <button class="btn btn-gold" onclick="placeOrder()">Place Order</button>
+      </div>
+    </section>
+
+
+    <!-- SCREEN 5 -->
+    <section class="screen" id="screen5">
+      <div class="success">
+        <div class="success-icon">✓</div>
+
+        <h2 class="section-title">Order Ready!</h2>
+
+        <p class="section-subtitle">
+          Your order has been prepared successfully.
+        </p>
+
+        <div class="order-number">
+          Order Reference<br>
+          <span id="localOrderNumber">TOPS-000000</span>
+        </div>
+
+        <p style="font-size:14px;line-height:1.5;color:var(--muted);">
+          Tops Chicken Farm will use your phone/WhatsApp details to communicate about your order.
+        </p>
+
+        <div class="note">
+          Your order has been sent to Tops Chicken Farm.
+          <strong>Payment: Cash on Delivery / Collection.</strong>
+        </div>
+
+        <div class="track-box">
+
+          <div class="track-title">Track Your Order</div>
+
+          <div class="track-subtitle">
+            Enter your order reference and phone number to see the latest
+            status of your order.
+          </div>
+
+          <div class="track-fields">
+
+            <input
+              id="trackOrderNumber"
+              class="input"
+              type="text"
+              placeholder="Order reference e.g. TOPS-12345678"
+            >
+
+            <input
+              id="trackPhone"
+              class="input"
+              type="tel"
+              placeholder="Phone number used for the order"
+            >
+
+            <button
+              class="btn btn-primary"
+              id="trackOrderBtn"
+              type="button">
+              Check Order Status
+            </button>
+
+          </div>
+
+          <div id="trackOrderError" class="track-error"></div>
+          <div id="trackOrderResult" class="track-result"></div>
+
+        </div>
+
+        <div class="buttons">
+          <button class="btn btn-primary" onclick="startNewOrder()">Place Another Order</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <strong>TOPS CHICKEN FARM</strong><br>
+    Healthy Chicks • Strong Farms • Better Tomorrow
+    <br>
+    <a class="whatsapp" href="https://wa.me/254727448884" target="_blank">
+      WhatsApp: 0727 448 884
+    </a>
+    <br>
+    <span>0727 448 884 &nbsp; | &nbsp; 0717 367 016</span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* =========================================================
+   TOPS CHICKEN FARM
+   STAGE 2 - CUSTOMER ORDERING APP
+   Supabase is connected in Stage 2.
+   ========================================================= */
+
+const SUPABASE_URL = "https://dsmcdrbbeqrqhptfyhjm.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_anu0F4Ph9K4UtGNAx3vk9w_eZmHzB-h";
+const topsSupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const AGE_ORDER = ["Day Old", "1 Week", "2 Weeks", "3 Weeks", "1 Month"];
+let livePrices = [];
+let pricesLoaded = false;
+
+const order = {
+  breed: "Sasso",
+  age: "",
+  price: 0,
+  quantity: 1,
+  customerName: "",
+  customerPhone: "",
+  location: "",
+  method: "Delivery",
+  notes: ""
+};
+
+function formatMoney(amount){
+  return "KSh " + Number(amount).toLocaleString("en-KE");
+}
+
+function prettyAge(age){
+  const labels = {
+    "Day Old":"Day Old",
+    "1 Week":"1 Week Old",
+    "2 Weeks":"2 Weeks Old",
+    "3 Weeks":"3 Weeks Old",
+    "1 Month":"1 Month Old"
+  };
+  return labels[age] || age;
+}
+
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function showPriceError(message){
+  document.getElementById("ageList").innerHTML = `
+    <div style="padding:16px;background:#fff1f1;border:1px solid #f0b5b5;border-radius:13px;color:var(--red);line-height:1.5;">
+      <strong>Could not load prices.</strong><br>${escapeHtml(message)}
+    </div>`;
+}
+
+function renderPricesForBreed(breed){
+  const list = document.getElementById("ageList");
+  const rows = livePrices.filter(row => row.breed.toLowerCase() === breed.toLowerCase());
+
+  if(!rows.length){
+    order.age = "";
+    order.price = 0;
+    list.innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);background:white;border:1px solid var(--border);border-radius:13px;">No active prices are currently available for ${escapeHtml(breed)}.</div>`;
+    updateTotal();
+    return;
+  }
+
+  rows.sort((a,b)=>{
+    const ai=AGE_ORDER.indexOf(a.age), bi=AGE_ORDER.indexOf(b.age);
+    return (ai<0?999:ai)-(bi<0?999:bi);
+  });
+
+  list.innerHTML = rows.map((row,i)=>`
+    <div class="age-option ${i===0?'selected':''}" data-age="${escapeHtml(row.age)}" data-price="${row.price}" onclick="selectAge(this)">
+      <span class="age-name">${escapeHtml(prettyAge(row.age))}</span>
+      <span class="age-price">${formatMoney(row.price)}</span>
+    </div>`).join("");
+
+  order.age = rows[0].age;
+  order.price = rows[0].price;
+  updateTotal();
+}
+
+async function loadPrices(){
+  const list=document.getElementById("ageList");
+  list.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);background:white;border:1px solid var(--border);border-radius:13px;">Loading live prices...</div>';
+  try{
+    const {data,error}=await topsSupabaseClient
+      .from("chick_prices")
+      .select("breed,chick_age,price")
+      .eq("active",true)
+      .order("id",{ascending:true});
+    if(error) throw error;
+    livePrices=(data||[]).map(r=>({breed:String(r.breed||"").trim(),age:String(r.chick_age||"").trim(),price:Number(r.price)}))
+      .filter(r=>r.breed&&r.age&&Number.isFinite(r.price));
+    if(!livePrices.length) throw new Error("No active prices were found.");
+    pricesLoaded=true;
+    renderPricesForBreed(order.breed);
+  }catch(error){
+    console.error("Price loading error",error);
+    showPriceError(error?.message||"Failed to load prices from Supabase.");
+  }
+}
+
+function selectBreed(card){
+  document.querySelectorAll(".breed-card").forEach(c => c.classList.remove("selected"));
+  card.classList.add("selected");
+  order.breed = card.dataset.breed;
+  if(pricesLoaded) renderPricesForBreed(order.breed);
+}
+
+function selectAge(option){
+  document.querySelectorAll(".age-option").forEach(o => o.classList.remove("selected"));
+  option.classList.add("selected");
+
+  order.age = option.dataset.age;
+  order.price = Number(option.dataset.price);
+
+  updateTotal();
+}
+
+function changeQuantity(amount){
+  order.quantity += amount;
+
+  /* No minimum order restriction */
+  if(order.quantity < 1){
+    order.quantity = 1;
+  }
+
+  document.getElementById("quantityDisplay").textContent = order.quantity;
+  updateTotal();
+}
+
+function updateTotal(){
+  const total = order.price * order.quantity;
+  document.getElementById("totalDisplay").textContent = formatMoney(total);
+}
+
+function hideErrors(){
+  document.querySelectorAll(".error").forEach(e => e.style.display = "none");
+}
+
+function validateDetails(){
+  hideErrors();
+
+  order.customerName = document.getElementById("customerName").value.trim();
+  order.customerPhone = document.getElementById("customerPhone").value.trim();
+  order.location = document.getElementById("customerLocation").value.trim();
+
+  let valid = true;
+
+  if(!order.customerName){
+    document.getElementById("nameError").style.display = "block";
+    valid = false;
+  }
+
+  if(!order.customerPhone){
+    document.getElementById("phoneError").style.display = "block";
+    valid = false;
+  }
+
+  if(!order.location){
+    document.getElementById("locationError").style.display = "block";
+    valid = false;
+  }
+
+  if(valid){
+    goToScreen(3);
+  }
+}
+
+function selectMethod(choice){
+  document.querySelectorAll(".choice").forEach(c => c.classList.remove("selected"));
+  choice.classList.add("selected");
+  order.method = choice.dataset.method;
+}
+
+function updateReview(){
+  order.notes = document.getElementById("deliveryNotes").value.trim();
+
+  document.getElementById("reviewBreed").textContent = order.breed;
+  document.getElementById("reviewAge").textContent = order.age;
+  document.getElementById("reviewPrice").textContent = formatMoney(order.price);
+  document.getElementById("reviewQuantity").textContent = order.quantity;
+  document.getElementById("reviewName").textContent = order.customerName;
+  document.getElementById("reviewPhone").textContent = order.customerPhone;
+  document.getElementById("reviewLocation").textContent = order.location;
+  document.getElementById("reviewMethod").textContent = order.method;
+  document.getElementById("reviewTotal").textContent =
+    formatMoney(order.price * order.quantity);
+}
+
+function goToScreen(number){
+  if(number === 4){
+    updateReview();
+  }
+
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen" + number).classList.add("active");
+
+  updateSteps(number);
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+function updateSteps(number){
+  const indicators = [
+    document.getElementById("step1Indicator"),
+    document.getElementById("step2Indicator"),
+    document.getElementById("step3Indicator"),
+    document.getElementById("step4Indicator")
+  ];
+
+  indicators.forEach((item,index)=>{
+    item.classList.remove("active","done");
+
+    if(index + 1 === number){
+      item.classList.add("active");
+    }
+
+    if(index + 1 < number){
+      item.classList.add("done");
+    }
+  });
+}
+
+async function placeOrder(){
+  if(!pricesLoaded || !order.age || !order.price){
+    alert("Please select a chick age with an available price before placing the order.");
+    return;
+  }
+
+  order.notes = document.getElementById("deliveryNotes").value.trim();
+
+  const random = Math.floor(10000000 + Math.random() * 90000000);
+  const reference = "TOPS-" + random;
+
+  const payload = {
+    order_number: reference,
+    customer_name: order.customerName,
+    phone: order.customerPhone,
+    location: order.location,
+    delivery_method: order.method,
+    breed: order.breed,
+    chick_age: order.age,
+    quantity: order.quantity,
+    unit_price: order.price,
+    total: order.price * order.quantity,
+    notes: order.notes || null,
+    status: "New"
+  };
+
+  const button=document.querySelector('#screen4 .btn-gold');
+  const originalText=button.textContent;
+  button.disabled=true;
+  button.textContent="Placing Order...";
+
+  try{
+    const {error}=await topsSupabaseClient.from("orders").insert([payload]);
+    if(error) throw error;
+
+    document.getElementById("localOrderNumber").textContent=reference;
+
+    document.getElementById("trackOrderNumber").value =
+      reference;
+
+    document.getElementById("trackPhone").value =
+      order.customerPhone;
+
+    goToScreen(5);
+  }catch(error){
+    console.error("Order submission error",error);
+    alert("Could not place order: " + (error?.message || "Please try again."));
+  }finally{
+    button.disabled=false;
+    button.textContent=originalText;
+  }
+}
+
+
+/* =========================================================
+   TRACK CUSTOMER ORDER
+   ========================================================= */
+
+async function trackCustomerOrder(){
+
+  const reference =
+    document.getElementById("trackOrderNumber").value.trim();
+
+  const phone =
+    document.getElementById("trackPhone").value.trim();
+
+  const errorBox =
+    document.getElementById("trackOrderError");
+
+  const resultBox =
+    document.getElementById("trackOrderResult");
+
+  const button =
+    document.getElementById("trackOrderBtn");
+
+  errorBox.textContent = "";
+  resultBox.style.display = "none";
+
+  if(!reference || !phone){
+    errorBox.textContent =
+      "Enter both your order reference and phone number.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Checking...";
+
+  try{
+
+    const {data,error} =
+      await topsSupabaseClient.rpc(
+        "track_order",
+        {
+          p_order_number: reference,
+          p_phone: phone
+        }
+      );
+
+    if(error) throw error;
+
+    if(!data){
+
+      errorBox.textContent =
+        "Order not found. Check the order reference and phone number.";
+
+      return;
+    }
+
+    const status = String(data.status || "New");
+
+    resultBox.innerHTML =
+      "<b>Order:</b> " +
+      escapeHtml(data.order_number || reference) +
+      "<br><b>Customer:</b> " +
+      escapeHtml(data.customer_name || "-") +
+      "<br><b>Chicks:</b> " +
+      escapeHtml(data.breed || "-") +
+      " — " +
+      escapeHtml(data.chick_age || "-") +
+      "<br><b>Quantity:</b> " +
+      escapeHtml(String(data.quantity || 0)) +
+      "<br><b>Total:</b> KSh " +
+      Number(data.total || 0).toLocaleString("en-KE") +
+      "<br><b>Method:</b> " +
+      escapeHtml(data.delivery_method || "-") +
+      "<br>" +
+      '<span class="track-status ' +
+      escapeHtml(status.toLowerCase()) +
+      '">' +
+      escapeHtml(status) +
+      "</span>";
+
+    resultBox.style.display = "block";
+
+  }catch(error){
+
+    console.error("Order tracking error",error);
+
+    errorBox.textContent =
+      "Could not check the order status. Please try again.";
+
+  }finally{
+
+    button.disabled = false;
+    button.textContent = "Check Order Status";
+
+  }
+
+}
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+
+document.getElementById("trackOrderBtn").addEventListener(
+  "click",
+  trackCustomerOrder
+);
+
+function startNewOrder(){
+  order.breed = "Sasso";
+  order.age = "";
+  order.price = 0;
+  order.quantity = 1;
+  order.customerName = "";
+  order.customerPhone = "";
+  order.location = "";
+  order.method = "Delivery";
+  order.notes = "";
+
+  document.getElementById("customerName").value = "";
+  document.getElementById("customerPhone").value = "";
+  document.getElementById("customerLocation").value = "";
+  document.getElementById("deliveryNotes").value = "";
+
+  document.getElementById("trackOrderNumber").value = "";
+  document.getElementById("trackPhone").value = "";
+  document.getElementById("trackOrderError").textContent = "";
+  document.getElementById("trackOrderResult").style.display = "none";
+  document.getElementById("trackOrderResult").innerHTML = "";
+
+  document.querySelectorAll(".breed-card").forEach(c => c.classList.remove("selected"));
+  document.querySelector('.breed-card[data-breed="Sasso"]').classList.add("selected");
+
+  if(pricesLoaded) renderPricesForBreed("Sasso");
+
+  document.querySelectorAll(".choice").forEach(c => c.classList.remove("selected"));
+  document.querySelector('.choice[data-method="Delivery"]').classList.add("selected");
+
+  document.getElementById("quantityDisplay").textContent = "1";
+  updateTotal();
+  hideErrors();
+
+  goToScreen(1);
+}
+
+updateTotal();
+loadPrices();
+
+/* =========================================================
+   PWA SERVICE WORKER
+   ========================================================= */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("./sw.js")
+      .then(function(registration){
+        console.log("Tops Chicken Farm service worker registered.", registration.scope);
+      })
+      .catch(function(error){
+        console.error("Service worker registration failed:", error);
+      });
+  });
+}
+</script>
+
+</body>
+</html>
