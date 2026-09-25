@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tops Chicken Farm — Admin Dashboard</title>
+<style>
+:root{--g:#126b3a;--g2:#0b4d2a;--gold:#d7a928;--bg:#f2f5f2;--line:#dfe5df;--red:#b92d2d;--text:#18231d}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}.hidden{display:none!important}
+.header{background:linear-gradient(135deg,var(--g2),var(--g));color:white;padding:17px 14px;position:sticky;top:0;z-index:5}
+.head{max-width:1050px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-weight:900;font-size:20px}.sub{font-size:12px;opacity:.85;margin-top:3px}
+.container{max-width:1050px;margin:auto;padding:16px 13px 45px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px;margin-bottom:15px;box-shadow:0 7px 25px #0000000d}
+.login{min-height:100vh;display:grid;place-items:center;padding:16px}.login .card{width:100%;max-width:430px}
+.logo{width:68px;height:68px;border-radius:50%;background:var(--g);border:4px solid #e5c044;display:grid;place-items:center;margin:0 auto 12px;font-size:30px}
+h1{font-size:23px;text-align:center;margin:0 0 5px}h2{font-size:19px;margin:0 0 7px}.muted{font-size:13px;color:#68736d}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}
+input,select{width:100%;padding:11px 12px;border:1px solid #cfd8d1;border-radius:9px;background:white;outline:none}
+input:focus,select:focus{border-color:var(--g)}
+.btn{border:0;border-radius:9px;padding:11px 14px;background:var(--g);color:#fff;font-weight:800;cursor:pointer}.btn.gray{background:#e8ede9;color:#26352c}.btn.red{background:var(--red)}.btn.gold{background:var(--gold);color:#20281f}.btn.small{padding:7px 9px;font-size:12px}.full{width:100%;margin-top:15px}
+.msg{padding:10px 11px;border-radius:9px;margin-top:11px;font-size:13px}.error{background:#fff0f0;color:#972727;border:1px solid #e9b8b8}.ok{background:#edf9f1;color:#17652f;border:1px solid #b9dfc4}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:15px}.stat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px}.num{font-size:24px;font-weight:900;color:var(--g)}.lab{font-size:12px;color:#68736d}
+.formgrid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}.check{display:flex;align-items:center;gap:7px;font-size:13px;margin-top:12px}.check input{width:auto}
+.toolbar{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.toolbar .field{flex:1;min-width:150px}
+.tablewrap{overflow-x:auto;margin-top:12px}table{border-collapse:collapse;width:100%;min-width:720px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{background:#f5f8f5}
+.badge{display:inline-block;padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800}.active{background:#e5f7eb;color:#14632f}.inactive{background:#f3eaea;color:#8b3030}
+.actions{display:flex;gap:6px;flex-wrap:wrap}.loading{text-align:center;padding:24px;color:#68736d}
+
+/*==================================================
+ORDERS
+==================================================*/
+.ordersStats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:15px 0}
+.orderStat{background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px}
+.orderNum{font-size:22px;font-weight:900;color:var(--g)}
+.orderLabel{font-size:12px;color:#68736d}
+.orderToolbar{display:flex;gap:9px;align-items:end;flex-wrap:wrap}
+.orderToolbar .field{flex:1;min-width:160px}
+.orderBadge{display:inline-block;padding:5px 8px;border-radius:99px;font-size:11px;font-weight:800;background:#fff4d6;color:#765500}
+.orderDetails{line-height:1.45}
+.orderNotes{max-width:220px;white-space:normal}
+
+
+/*==================================================
+ADMIN BRAND LOGO
+==================================================*/
+.adminLogo{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#126b3a;
+  border:2px solid #e5c044;
+  display:grid;
+  place-items:center;
+  font-size:23px;
+  flex:0 0 42px;
+  box-shadow:0 3px 10px #0003;
+}
+.brandWrap{display:flex;align-items:center;gap:10px}
+
+
+/*==================================================
+PROCESS ORDER
+==================================================*/
+.processBtn{background:var(--gold)!important;color:#20281f!important}
+.processModal{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  z-index:50;
+}
+.processBox{
+  width:100%;
+  max-width:620px;
+  max-height:92vh;
+  overflow:auto;
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 20px 60px #0005;
+}
+.processHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+}
+.processClose{
+  border:0;
+  background:#e8ede9;
+  color:#26352c;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  font-size:20px;
+  cursor:pointer;
+}
+.processGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+.processItem{
+  background:#f6f8f6;
+  border-radius:10px;
+  padding:10px;
+}
+.processItem span{
+  display:block;
+  font-size:11px;
+  color:#68736d;
+  margin-bottom:3px;
+}
+.processItem strong{font-size:14px}
+.processActions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+/*==================================================
+CHICKEN FARM LOGO
+==================================================*/
+.chickenLogoSvg{width:56px;height:56px;display:block}
+.adminLogo{display:grid;place-items:center;overflow:hidden}
+.adminLogo .chickenLogoSvg{width:38px;height:38px}
+
+@media(max-width:700px){
+  .processGrid{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){.stats{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.head{align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login">
+  <div class="card">
+    <div class="logo"><svg class="chickenLogoSvg" viewBox="0 0 100 100" aria-label="Tops Chicken Farm logo">
+  <circle cx="50" cy="50" r="47" fill="#126b3a" stroke="#e5c044" stroke-width="6"/>
+  <ellipse cx="51" cy="57" rx="25" ry="19" fill="#f5f5f0"/>
+  <circle cx="66" cy="37" r="14" fill="#f5f5f0"/>
+  <circle cx="70" cy="34" r="2.8" fill="#18231d"/>
+  <path d="M80 38 L91 43 L80 47 Z" fill="#d7a928"/>
+  <circle cx="72" cy="22" r="4" fill="#b92d2d"/>
+  <circle cx="79" cy="25" r="3.5" fill="#b92d2d"/>
+  <path d="M30 46 Q18 35 25 24 Q30 35 39 39 Z" fill="#d7a928"/>
+  <path d="M43 74 L40 86 M56 74 L59 86" stroke="#d7a928" stroke-width="4" stroke-linecap="round"/>
+  <path d="M35 86 H45 M54 86 H64" stroke="#d7a928" stroke-width="3" stroke-linecap="round"/>
+</svg></div>
+    <h1>TOPS CHICKEN FARM</h1>
+    <div class="muted" style="text-align:center">Admin Dashboard</div>
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="username" placeholder="Admin email">
+    <label>Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Password">
+    <button id="loginBtn" class="btn full">LOGIN</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<div id="appView" class="hidden">
+  <div class="header"><div class="head">
+    <div class="brandWrap"><div class="adminLogo"><svg class="chickenLogoSvg" viewBox="0 0 100 100" aria-label="Tops Chicken Farm logo">
+  <circle cx="50" cy="50" r="47" fill="#126b3a" stroke="#e5c044" stroke-width="6"/>
+  <ellipse cx="51" cy="57" rx="25" ry="19" fill="#f5f5f0"/>
+  <circle cx="66" cy="37" r="14" fill="#f5f5f0"/>
+  <circle cx="70" cy="34" r="2.8" fill="#18231d"/>
+  <path d="M80 38 L91 43 L80 47 Z" fill="#d7a928"/>
+  <circle cx="72" cy="22" r="4" fill="#b92d2d"/>
+  <circle cx="79" cy="25" r="3.5" fill="#b92d2d"/>
+  <path d="M30 46 Q18 35 25 24 Q30 35 39 39 Z" fill="#d7a928"/>
+  <path d="M43 74 L40 86 M56 74 L59 86" stroke="#d7a928" stroke-width="4" stroke-linecap="round"/>
+  <path d="M35 86 H45 M54 86 H64" stroke="#d7a928" stroke-width="3" stroke-linecap="round"/>
+</svg></div><div><div class="brand">TOPS CHICKEN FARM</div><div class="sub">Admin Dashboard • Price Management</div></div></div>
+    <button id="logoutBtn" class="btn gray small">Logout</button>
+  </div></div>
+
+  <main class="container">
+    <div class="stats">
+      <div class="stat"><div id="total" class="num">0</div><div class="lab">Total price records</div></div>
+      <div class="stat"><div id="activeCount" class="num">0</div><div class="lab">Active prices</div></div>
+      <div class="stat"><div id="inactiveCount" class="num">0</div><div class="lab">Inactive prices</div></div>
+    </div>
+
+    <section class="card">
+      <h2 id="formTitle">Add Chick Price</h2>
+      <div class="muted">Manage customer prices from this dashboard.</div>
+      <div class="formgrid">
+        <div><label>Breed</label><select id="breed"><option>Sasso</option><option>Kuroilers</option><option>Karlo</option></select></div>
+        <div><label>Age</label><select id="age"><option>Day Old</option><option>1 Week Old</option><option>2 Weeks Old</option><option>3 Weeks Old</option><option>1 Month Old</option></select></div>
+        <div><label>Price (KSh)</label><input id="price" type="number" min="0" step="0.01" placeholder="e.g. 100"></div>
+        <button id="saveBtn" class="btn">SAVE PRICE</button>
+      </div>
+      <label class="check"><input id="active" type="checkbox" checked> Active — customers can see this price</label>
+      <button id="cancelBtn" class="btn gray small hidden">Cancel Edit</button>
+      <div id="formMsg"></div>
+    </section>
+
+    <section class="card">
+      <h2>Price List</h2>
+      <div class="toolbar">
+        <div class="field"><label>Breed</label><select id="breedFilter"><option value="">All Breeds</option><option>Sasso</option><option>Kuroilers</option><option>Karlo</option></select></div>
+        <div class="field"><label>Status</label><select id="statusFilter"><option value="">All</option><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <button id="refreshBtn" class="btn gray">REFRESH</button>
+      </div>
+      <div id="tableMsg"></div>
+      <div id="table" class="tablewrap"></div>
+    </section>
+
+    <!--==================================================
+    ORDERS
+    ==================================================-->
+
+    <section class="card">
+      <h2>Customer Orders</h2>
+      <div class="muted">View orders submitted from the customer ordering app.</div>
+
+      <div class="ordersStats">
+        <div class="orderStat">
+          <div id="ordersTotal" class="orderNum">0</div>
+          <div class="orderLabel">Total Orders</div>
+        </div>
+        <div class="orderStat">
+          <div id="ordersNew" class="orderNum">0</div>
+          <div class="orderLabel">New Orders</div>
+        </div>
+        <div class="orderStat">
+          <div id="ordersValue" class="orderNum">KSh 0</div>
+          <div class="orderLabel">Order Value</div>
+        </div>
+      </div>
+
+      <div class="orderToolbar">
+        <div class="field">
+          <label>Status</label>
+          <select id="orderStatusFilter">
+            <option value="">All Orders</option>
+            <option value="New">New</option>
+          </select>
+        </div>
+        <button id="refreshOrdersBtn" class="btn gray">REFRESH ORDERS</button>
+      </div>
+
+      <div id="ordersMsg"></div>
+      <div id="ordersTable" class="tablewrap"></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const URL = "https://dsmcdrbbeqrqhptfyhjm.supabase.co";
+const KEY = "sb_publishable_anu0F4Ph9K4UtGNAx3vk9w_eZmHzB-h";
+const AUTH_TOKEN = "tops_admin_session";
+let token = localStorage.getItem(AUTH_TOKEN) || "";
+let prices = [];
+let orders = [];
+let editingId = null;
+
+const $ = id => document.getElementById(id);
+
+function esc(v){
+  return String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function msg(id,text,type="error"){ $(id).innerHTML=text?'<div class="msg '+type+'">'+text+'</div>':""; }
+function headers(withAuth=true){
+  const h={"apikey":KEY,"Content-Type":"application/json","Accept":"application/json"};
+  if(withAuth && token) h["Authorization"]="Bearer "+token;
+  return h;
+}
+async function api(path, options={}){
+  const response=await fetch(URL+path,Object.assign({headers:headers(true)},options));
+  const raw=await response.text();
+  let data=null;
+  try{data=raw?JSON.parse(raw):null}catch(e){data=raw}
+  if(!response.ok){
+    const text=(data && (data.message||data.error_description||data.error||data.msg)) || raw || ("HTTP "+response.status);
+    throw new Error(text);
+  }
+  return data;
+}
+function showApp(on){$("loginView").classList.toggle("hidden",on);$("appView").classList.toggle("hidden",!on);}
+function money(v){return Number(v).toLocaleString("en-KE",{maximumFractionDigits:2});}
+
+async function login(){
+  const email=$("email").value.trim(), password=$("password").value;
+  if(!email||!password){msg("loginMsg","Enter your email and password.");return;}
+  $("loginBtn").disabled=true;$("loginBtn").textContent="LOGGING IN...";msg("loginMsg","");
+  try{
+    const response=await fetch(URL+"/auth/v1/token?grant_type=password",{
+      method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json"},
+      body:JSON.stringify({email,password})
+    });
+    const raw=await response.text();let data;
+    try{data=JSON.parse(raw)}catch(e){data={message:raw}};
+    if(!response.ok) throw new Error(data.error_description||data.message||"Login failed");
+    if(!data.access_token) throw new Error("No access token was returned.");
+    token=data.access_token;
+    localStorage.setItem(AUTH_TOKEN,token);
+    showApp(true);
+    await loadPrices();
+    await loadOrders();
+  }catch(e){
+    msg("loginMsg","Login/connection error: "+esc(e.message));
+  }finally{$("loginBtn").disabled=false;$("loginBtn").textContent="LOGIN";}
+}
+async function loadPrices(){
+  $("table").innerHTML='<div class="loading">Loading prices...</div>';msg("tableMsg","");
+  try{
+    prices=await api("/rest/v1/chick_prices?select=*&order=breed.asc,chick_age.asc");
+    if(!Array.isArray(prices)) prices=[];
+    renderStats();renderTable();
+  }catch(e){
+    $("table").innerHTML="";
+    msg("tableMsg","Could not load prices: "+esc(e.message));
+  }
+}
+function renderStats(){
+  $("total").textContent=prices.length;
+  const a=prices.filter(x=>x.active===true).length;
+  $("activeCount").textContent=a;$("inactiveCount").textContent=prices.length-a;
+}
+function renderTable(){
+  const bf=$("breedFilter").value,sf=$("statusFilter").value;
+  const rows=prices.filter(x=>(!bf||x.breed===bf)&&(!sf||(sf==="active"?x.active===true:x.active===false)));
+  if(!rows.length){$("table").innerHTML='<div class="loading">No price records found.</div>';return;}
+  $("table").innerHTML='<table><thead><tr><th>Breed</th><th>Age</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+
+    rows.map(x=>'<tr><td><b>'+esc(x.breed)+'</b></td><td>'+esc(x.chick_age)+'</td><td><b>KSh '+money(x.price)+'</b></td><td><span class="badge '+(x.active?'active':'inactive')+'">'+(x.active?'ACTIVE':'INACTIVE')+'</span></td><td><div class="actions"><button class="btn small" onclick="window.topsEdit('+Number(x.id)+')">Edit</button><button class="btn small '+(x.active?'red':'gold')+'" onclick="window.topsToggle('+Number(x.id)+')">'+(x.active?'Deactivate':'Activate')+'</button></div></td></tr>').join("")+
+    '</tbody></table>';
+}
+function reset(){
+  editingId=null;$("formTitle").textContent="Add Chick Price";$("breed").value="Sasso";$("age").value="Day Old";$("price").value="";$("active").checked=true;$("saveBtn").textContent="SAVE PRICE";$("cancelBtn").classList.add("hidden");msg("formMsg","");
+}
+window.topsEdit=function(id){
+  const x=prices.find(r=>Number(r.id)===id);if(!x)return;
+  editingId=id;$("formTitle").textContent="Edit Chick Price";$("breed").value=x.breed;$("age").value=x.chick_age;$("price").value=x.price;$("active").checked=!!x.active;$("saveBtn").textContent="UPDATE PRICE";$("cancelBtn").classList.remove("hidden");msg("formMsg","Editing "+esc(x.breed)+" — "+esc(x.chick_age),"ok");scrollTo({top:0,behavior:"smooth"});
+};
+async function save(){
+  const breed=$("breed").value,age=$("age").value,price=Number($("price").value),active=$("active").checked;
+  if(!Number.isFinite(price)||price<0){msg("formMsg","Enter a valid price.");return;}
+  $("saveBtn").disabled=true;$("saveBtn").textContent=editingId?"UPDATING...":"SAVING...";msg("formMsg","");
+  try{
+    if(editingId){
+      await api("/rest/v1/chick_prices?id=eq."+encodeURIComponent(editingId),{method:"PATCH",headers:headers(true),body:JSON.stringify({breed,chick_age:age,price,active,updated_at:new Date().toISOString()})});
+    }else{
+      await api("/rest/v1/chick_prices",{method:"POST",headers:Object.assign(headers(true),{"Prefer":"return=minimal"}),body:JSON.stringify({breed,chick_age:age,price,active})});
+    }
+    const wasEdit=!!editingId;reset();msg("formMsg",wasEdit?"Price updated successfully.":"Price saved successfully.","ok");await loadPrices();
+  }catch(e){
+    const t=String(e.message).toLowerCase();
+    msg("formMsg",t.includes("duplicate")||t.includes("23505")?"A price for this breed and age already exists. Edit that record instead.":esc(e.message));
+  }finally{$("saveBtn").disabled=false;$("saveBtn").textContent=editingId?"UPDATE PRICE":"SAVE PRICE";}
+}
+window.topsToggle=async function(id){
+  const x=prices.find(r=>Number(r.id)===id);if(!x)return;
+  if(!confirm("Are you sure you want to "+(x.active?"deactivate":"activate")+" this price?"))return;
+  try{await api("/rest/v1/chick_prices?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:headers(true),body:JSON.stringify({active:!x.active,updated_at:new Date().toISOString()})});await loadPrices();}
+  catch(e){msg("tableMsg","Could not update price: "+esc(e.message));}
+};
+
+/*==================================================
+LOAD ORDERS
+==================================================*/
+
+async function loadOrders(){
+
+  $("ordersTable").innerHTML =
+    '<div class="loading">Loading orders...</div>';
+
+  msg("ordersMsg","");
+
+  try{
+
+    orders = await api(
+      "/rest/v1/orders?select=*&order=created_at.desc"
+    );
+
+    if(!Array.isArray(orders)){
+      orders = [];
+    }
+
+    renderOrderStats();
+    renderOrders();
+
+  }catch(e){
+
+    $("ordersTable").innerHTML = "";
+
+    msg(
+      "ordersMsg",
+      "Could not load orders: " + esc(e.message)
+    );
+
+  }
+
+}
+
+/*==================================================
+ORDER STATS
+==================================================*/
+
+function renderOrderStats(){
+
+  $("ordersTotal").textContent = orders.length;
+
+  $("ordersNew").textContent =
+    orders.filter(x =>
+      String(x.status || "").toLowerCase() === "new"
+    ).length;
+
+  const totalValue = orders.reduce(
+    (sum,x) => sum + Number(x.total || 0),
+    0
+  );
+
+  $("ordersValue").textContent =
+    "KSh " + money(totalValue);
+
+}
+
+/*==================================================
+RENDER ORDERS
+==================================================*/
+
+function renderOrders(){
+
+  const filter = $("orderStatusFilter").value;
+
+  const rows = orders.filter(x =>
+    !filter || String(x.status || "") === filter
+  );
+
+  if(!rows.length){
+
+    $("ordersTable").innerHTML =
+      '<div class="loading">No orders found.</div>';
+
+    return;
+
+  }
+
+  $("ordersTable").innerHTML =
+    '<table>' +
+    '<thead><tr>' +
+    '<th>Order</th>' +
+    '<th>Date</th>' +
+    '<th>Customer</th>' +
+    '<th>Phone</th>' +
+    '<th>Location</th>' +
+    '<th>Chicks</th>' +
+    '<th>Delivery</th>' +
+    '<th>Total</th>' +
+    '<th>Status</th>' +
+    '<th>Notes</th>' +
+    '</tr></thead>' +
+    '<tbody>' +
+
+    rows.map(x => {
+
+      const date = x.created_at
+        ? new Date(x.created_at).toLocaleString("en-KE")
+        : "-";
+
+      const chicks =
+        "<b>" + esc(x.breed || "") + "</b>" +
+        "<br>" + esc(x.chick_age || "") +
+        "<br>Qty: " + esc(x.quantity || 0) +
+        "<br>KSh " + money(x.unit_price || 0) + " each";
+
+      return (
+        "<tr>" +
+        "<td><b>" + esc(x.order_number || "-") + "</b></td>" +
+        "<td>" + esc(date) + "</td>" +
+        "<td>" + esc(x.customer_name || "-") + "</td>" +
+        "<td>" + esc(x.phone || "-") + "</td>" +
+        "<td>" + esc(x.location || "-") + "</td>" +
+        '<td class="orderDetails">' + chicks + "</td>" +
+        "<td>" + esc(x.delivery_method || "-") + "</td>" +
+        "<td><b>KSh " + money(x.total || 0) + "</b></td>" +
+        '<td><span class="orderBadge">' +
+          esc(x.status || "-") +
+        "</span><br>" +
+        '<button class="btn small processBtn" onclick="window.openProcessOrder(' +
+          Number(x.id) +
+        ')">Process</button></td>' +
+        '<td class="orderNotes">' +
+          esc(x.notes || "-") +
+        "</td>" +
+        "</tr>"
+      );
+
+    }).join("") +
+
+    "</tbody></table>";
+
+}
+
+/*==================================================
+ORDER EVENTS
+==================================================*/
+
+window.openProcessOrder = openProcessOrder;
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const closeProcessBtn = $("closeProcessBtn");
+  const cancelProcessBtn = $("cancelProcessBtn");
+  const saveOrderProcessBtn = $("saveOrderProcessBtn");
+  const refreshOrdersBtn = $("refreshOrdersBtn");
+  const orderStatusFilter = $("orderStatusFilter");
+
+  if(closeProcessBtn)
+    closeProcessBtn.onclick = closeProcessOrder;
+
+  if(cancelProcessBtn)
+    cancelProcessBtn.onclick = closeProcessOrder;
+
+  if(saveOrderProcessBtn)
+    saveOrderProcessBtn.onclick = saveOrderProcess;
+
+  if(refreshOrdersBtn)
+    refreshOrdersBtn.onclick = loadOrders;
+
+  if(orderStatusFilter)
+    orderStatusFilter.onchange = renderOrders;
+
+});
+
+
+/*==================================================
+PROCESS ORDER
+==================================================*/
+
+let processingOrderId = null;
+
+function openProcessOrder(id){
+
+  const order = orders.find(
+    x => Number(x.id) === Number(id)
+  );
+
+  if(!order) return;
+
+  processingOrderId = id;
+
+  $("processOrderNumber").textContent =
+    order.order_number || "Order";
+
+  $("processOrderStatus").value =
+    order.status || "New";
+
+
+  $("processOrderDetails").innerHTML =
+
+    '<div class="processItem"><span>Customer</span><strong>' +
+    esc(order.customer_name || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Phone</span><strong>' +
+    esc(order.phone || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Breed</span><strong>' +
+    esc(order.breed || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Chick Age</span><strong>' +
+    esc(order.chick_age || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Quantity</span><strong>' +
+    esc(order.quantity || 0) +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Unit Price</span><strong>KSh ' +
+    money(order.unit_price || 0) +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Delivery Method</span><strong>' +
+    esc(order.delivery_method || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Total</span><strong>KSh ' +
+    money(order.total || 0) +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Location</span><strong>' +
+    esc(order.location || "-") +
+    '</strong></div>' +
+
+    '<div class="processItem"><span>Customer Note</span><strong>' +
+    esc(order.notes || "-") +
+    '</strong></div>';
+
+  msg("processOrderMsg","");
+
+  $("processOrderModal").classList.remove("hidden");
+}
+
+function closeProcessOrder(){
+
+  processingOrderId = null;
+  $("processOrderModal").classList.add("hidden");
+  msg("processOrderMsg","");
+
+}
+
+async function saveOrderProcess(){
+
+  if(processingOrderId === null) return;
+
+  const status =
+    $("processOrderStatus").value;
+
+  const btn =
+    $("saveOrderProcessBtn");
+
+  btn.disabled = true;
+  btn.textContent = "SAVING...";
+
+  msg("processOrderMsg","");
+
+  try{
+
+    await api(
+      "/rest/v1/orders?id=eq." +
+      encodeURIComponent(processingOrderId),
+      {
+        method:"PATCH",
+        headers:headers(true),
+        body:JSON.stringify({
+          status:status
+        })
+      }
+    );
+
+    closeProcessOrder();
+
+    await loadOrders();
+
+  }catch(e){
+
+    msg(
+      "processOrderMsg",
+      "Could not update order: " +
+      esc(e.message)
+    );
+
+  }finally{
+
+    btn.disabled = false;
+    btn.textContent = "SAVE ORDER STATUS";
+
+  }
+
+}
+
+async function logout(){
+  try{if(token) await fetch(URL+"/auth/v1/logout",{method:"POST",headers:headers(true)});}catch(e){}
+  token="";localStorage.removeItem(AUTH_TOKEN);prices=[];orders=[];showApp(false);reset();
+}
+$("loginBtn").onclick=login;$("password").onkeydown=e=>{if(e.key==="Enter")login()};$("logoutBtn").onclick=logout;$("saveBtn").onclick=save;$("cancelBtn").onclick=reset;$("refreshBtn").onclick=loadPrices;$("breedFilter").onchange=renderTable;$("statusFilter").onchange=renderTable;
+
+if(token){showApp(true);loadPrices().catch(()=>{});loadOrders().catch(()=>{});}else showApp(false);
+
+})();
+</script>
+
+<!--==================================================
+PROCESS ORDER MODAL
+==================================================-->
+
+<div id="processOrderModal" class="processModal hidden">
+  <div class="processBox">
+
+    <div class="processHead">
+      <div>
+        <h2 style="margin:0">Process Order</h2>
+        <div id="processOrderNumber" class="muted"></div>
+      </div>
+      <button id="closeProcessBtn" class="processClose">×</button>
+    </div>
+
+    <div id="processOrderDetails" class="processGrid"></div>
+
+    <label>Status</label>
+    <select id="processOrderStatus">
+      <option value="New">New</option>
+      <option value="Processing">Processing</option>
+      <option value="Ready">Ready</option>
+      <option value="Completed">Completed</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+<div class="muted" style="margin-top:10px">Processing this order updates its status in the Orders table.</div>
+    <div id="processOrderMsg"></div>
+
+    <div class="processActions">
+      <button id="saveOrderProcessBtn" class="btn">SAVE ORDER STATUS</button>
+      <button id="cancelProcessBtn" class="btn gray">CANCEL</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
